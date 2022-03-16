@@ -17,10 +17,13 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user.password = hashed_password
 
     new_user = models.Users(**user.dict())
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except:
+        raise HTTPException(status_code=status.HTTP_226_IM_USED,
+                            detail=f"User already exists")
     if new_user is None:
         raise HTTPException(status_code=status.HTTP_417_EXPECTATION_FAILED,
                             detail=f"Create failed")
@@ -28,7 +31,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=schemas.User)
-def get_posts(id1: int, db: Session = Depends(get_db)):
+def get_user_by_id(id1: int, db: Session = Depends(get_db)):
     user = db.query(models.Users).filter(models.Users.id == id1).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
