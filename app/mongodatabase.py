@@ -1,15 +1,14 @@
 import pymongo
-
+from .schemas import StoreBase
+from pydantic_mongo import AbstractRepository
 
 client = pymongo.MongoClient("mongodb+srv://praveenavsm:suDPIDRtkgSeNb3S@cluster0.ldajt.mongodb.net/patientdb"
                              "?retryWrites=true&w=majority&tls=true" , tlsAllowInvalidCertificates=True)
 
 mydb = client['patientdb']
 
-mycol = mydb['patients']
+class StoreRepository(AbstractRepository[StoreBase]):
+    class Meta:
+        collection_name = 'stores'
 
-mydoc = mycol.find({"patientid": 1})
-
-
-for x in mydoc:
-  print(f"patient id:{x['patientid']}")
+store_repository = StoreRepository(database=mydb)

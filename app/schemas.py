@@ -1,40 +1,15 @@
 from datetime import datetime
+from typing import List
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel 
+from pydantic_mongo import ObjectIdField
+from bson import ObjectId
 
-
-class PostBase(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
-
-class PostCreate(PostBase):
-    pass
-
-
-class Post(PostBase):
-    created_date: datetime
-    id: int
+class StoreBase(BaseModel):
+    id: ObjectIdField = None
+    store_nbr: int
+    prgm_incl: List[int] = None
 
     class Config:
-        orm_mode = True
-
-
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class User(BaseModel):
-    id: int
-    email: EmailStr
-    created_date: datetime
-
-    class Config:
-        orm_mode = True
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+        # The ObjectIdField creates an bson ObjectId value, so its necessary to setup the json encoding
+        json_encoders = {ObjectId: str}
